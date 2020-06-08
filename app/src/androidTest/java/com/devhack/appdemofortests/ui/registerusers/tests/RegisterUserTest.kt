@@ -3,8 +3,6 @@ package com.devhack.appdemofortests.ui.registerusers.tests
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.devhack.appdemofortests.ui.activities.MainActivity
-import com.devhack.appdemofortests.ui.registerusers.robots.RegisterUserRobot
-import com.devhack.appdemofortests.ui.registerusers.robots.ResultRobot
 import com.devhack.appdemofortests.ui.registerusers.robots.registerUser
 import org.junit.Rule
 import org.junit.Test
