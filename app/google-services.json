@@ -1,0 +1,93 @@
+{
+  "project_info": {
+    "project_number": "650878348908",
+    "firebase_url": "https://tiendageek-d09be.firebaseio.com",
+    "project_id": "tiendageek-d09be",
+    "storage_bucket": "tiendageek-d09be.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:650878348908:android:be035a0dec75d3528c7249",
+        "android_client_info": {
+          "package_name": "co.devhack.tiendageek"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "650878348908-eu186iateqtr2qlgqc9if2ombn30emol.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "co.devhack.tiendageek",
+            "certificate_hash": "80b6782d16b2afbb70779af325caf99dadf8df6f"
+          }
+        },
+        {
+          "client_id": "650878348908-7ctm2ikoehc04civapaa48gpaoai296q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "co.devhack.tiendageek",
+            "certificate_hash": "f59176a21a9d42e95849cdae8cac2e25814984fd"
+          }
+        },
+        {
+          "client_id": "650878348908-4i4vl1kj6vic0ttsm58u6srne56jnnq6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBD64qKP0uv8JDNOmrER1RiEVkFKgH9QQw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "650878348908-4i4vl1kj6vic0ttsm58u6srne56jnnq6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:650878348908:android:be01ef97ed69b09e8c7249",
+        "android_client_info": {
+          "package_name": "com.devhack.appdemofortests"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "650878348908-sj9qnm5plmi9pdk1ft58scl23cc8lqe5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.devhack.appdemofortests",
+            "certificate_hash": "80b6782d16b2afbb70779af325caf99dadf8df6f"
+          }
+        },
+        {
+          "client_id": "650878348908-4i4vl1kj6vic0ttsm58u6srne56jnnq6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBD64qKP0uv8JDNOmrER1RiEVkFKgH9QQw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "650878348908-4i4vl1kj6vic0ttsm58u6srne56jnnq6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

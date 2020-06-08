@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">AppDemoForTests</string>
+    <string name="lbl_name">Name</string>
+    <string name="lbl_last_name">Last Name</string>
+    <string name="lbl_cell_phone">Cell Phone</string>
+    <string name="lbl_address">Address</string>
+    <string name="lbl_register">Send</string>
+</resources>
