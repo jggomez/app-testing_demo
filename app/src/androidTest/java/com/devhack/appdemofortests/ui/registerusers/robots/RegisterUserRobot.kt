@@ -34,7 +34,7 @@ class RegisterUserRobot {
 
     fun typeCellPhone(cellPhone: String) {
         onView(
-            withId(R.id.txtCellPhone)
+            withId(R.id.txtCellPhoneNumber)
         ).perform(
             typeText(cellPhone),
             closeSoftKeyboard()
@@ -63,7 +63,7 @@ class RegisterUserRobot {
 class ResultRobot {
 
     fun isSuccessUserList() {
-        onView(withId(R.id.lblUsers)).check(
+        onView(withId(R.id.rvUsers)).check(
             matches(isDisplayed())
         )
     }

@@ -9,7 +9,7 @@ import kotlin.coroutines.suspendCoroutine
 class FirestoreDataSource : DataSource {
 
     companion object {
-        const val USERS_COLLECTION = "users"
+        const val USERS_COLLECTION = "userstest"
     }
 
     private val db by lazy {
@@ -24,4 +24,13 @@ class FirestoreDataSource : DataSource {
                 .addOnFailureListener { continuation.resumeWithException(it) }
         }
 
+    override suspend fun getAllUsers(): List<UserEntity> =
+        suspendCoroutine { continuation ->
+            db.collection(USERS_COLLECTION)
+                .get()
+                .addOnFailureListener { continuation.resumeWithException(it) }
+                .addOnSuccessListener {
+                    continuation.resume(it.toObjects(UserEntity::class.java))
+                }
+        }
 }

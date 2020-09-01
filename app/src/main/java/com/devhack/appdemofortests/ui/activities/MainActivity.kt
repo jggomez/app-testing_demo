@@ -7,6 +7,8 @@ import co.devhack.base.State
 import co.devhack.presentation.BaseActivity
 import com.devhack.appdemofortests.databinding.ActivityMainBinding
 import com.devhack.appdemofortests.ui.activities.viewmodels.UserViewModel
+import com.devhack.appdemofortests.ui.dialogs.DialogLoading
+import com.devhack.appdemofortests.ui.dialogs.showAnimLoading
 import com.devhack.appdemofortests.usecases.User
 import org.koin.android.ext.android.inject
 
@@ -14,6 +16,7 @@ class MainActivity : BaseActivity() {
 
     private val userViewModel by inject<UserViewModel>()
     private lateinit var binding: ActivityMainBinding
+    private lateinit var dialogLoading: DialogLoading
 
     override fun initView() {
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -23,11 +26,11 @@ class MainActivity : BaseActivity() {
     }
 
     override fun showProgress() {
-        Toast.makeText(this, "Loading...", Toast.LENGTH_SHORT).show()
+        dialogLoading = showAnimLoading()
     }
 
     override fun hideProgress() {
-
+        dialogLoading.dismiss()
     }
 
     private fun initListeners() {
@@ -48,7 +51,7 @@ class MainActivity : BaseActivity() {
         User(
             binding.txtName.text.toString(),
             binding.txtLastName.text.toString(),
-            binding.txtCellPhone.text.toString(),
+            binding.txtCellPhoneNumber.text.toString(),
             binding.txtAddress.text.toString()
         )
 
@@ -67,8 +70,6 @@ class MainActivity : BaseActivity() {
         }
 
     private fun handleSuccessRegister(success: Boolean) {
-        Toast.makeText(this, success.toString(), Toast.LENGTH_SHORT).show()
-        startActivity(Intent(this, UsersListActivity::class.java))
         finish()
     }
 }

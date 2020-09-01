@@ -12,6 +12,6 @@ val userRepositoryModule = module {
     }
 
     factory<UserRepository> {
-        UserRepositoryImp(get())
+        UserRepositoryImp(get(), get())
     }
 }

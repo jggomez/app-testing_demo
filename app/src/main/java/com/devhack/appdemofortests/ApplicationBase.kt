@@ -1,9 +1,7 @@
 package com.devhack.appdemofortests
 
 import android.app.Application
-import com.devhack.appdemofortests.di.userRepositoryModule
-import com.devhack.appdemofortests.di.userUseCaseModule
-import com.devhack.appdemofortests.di.userViewModelModule
+import com.devhack.appdemofortests.di.*
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -21,8 +19,10 @@ class ApplicationBase : Application() {
             androidContext(this@ApplicationBase)
             modules(
                 listOf(
+                    networkHandlerModule,
                     userRepositoryModule,
-                    userUseCaseModule,
+                    registerUserUseCaseModule,
+                    getAllUserUseCaseModule,
                     userViewModelModule
                 )
             )
