@@ -1,6 +1,7 @@
 package com.devhack.appdemofortests.viewmodel
 
-import androidx.lifecycle.MutableLiveData
+import androidx.arch.core.executor.ArchTaskExecutor
+import androidx.arch.core.executor.TaskExecutor
 import co.devhack.base.Either
 import co.devhack.base.State
 import co.devhack.base.error.Failure
@@ -11,20 +12,34 @@ import com.devhack.appdemofortests.usecases.User
 import io.mockk.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.*
-import org.amshove.kluent.shouldBeEqualTo
+import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.setMain
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.gherkin.Feature
+
 
 @ExperimentalCoroutinesApi
 object UserViewModelTest : Spek({
 
     val testCoroutineDispatcher = TestCoroutineDispatcher()
-    val testCoroutineScope = TestCoroutineScope(testCoroutineDispatcher)
 
     beforeGroup {
         Dispatchers.setMain(testCoroutineDispatcher)
+        ArchTaskExecutor.getInstance().setDelegate(object : TaskExecutor() {
+            override fun executeOnDiskIO(runnable: Runnable) {
+                runnable.run()
+            }
+
+            override fun isMainThread(): Boolean {
+                return true
+            }
+
+            override fun postToMainThread(runnable: Runnable) {
+                runnable.run()
+            }
+        })
     }
 
     group("Should ") {
@@ -35,33 +50,26 @@ object UserViewModelTest : Spek({
                 val responseExpected = true
                 val registerUserUseCase: RegisterUserUseCase = mockk(relaxed = true)
                 val getAllUsersUseCase: GetAllUsersUseCase = mockk(relaxed = true)
-                val userViewModel = UserViewModel(registerUserUseCase, getAllUsersUseCase)
                 val user: User = mockk(relaxed = true)
                 val params = RegisterUserUseCase.Params(user)
+
                 val response: Either<Failure, Boolean> = Either.Right(responseExpected)
-                val registerUserLiveData: MutableLiveData<State> = mockk(relaxed = true)
+                val userViewModel = UserViewModel(registerUserUseCase, getAllUsersUseCase)
 
                 Given("Creating stubs and context") {
                     coEvery {
                         registerUserUseCase.run(params)
                     } returns response
-
-                    coEvery { registerUserLiveData.value = capture(state) } just runs
                 }
 
                 When("Calling to action") {
-                    runBlockingTest {
+                    testCoroutineDispatcher.runBlockingTest {
                         userViewModel.register(user)
                     }
                 }
 
-                Then("Verify result success ") {
-                    state.captured shouldBeEqualTo State.Success(responseExpected)
-                }
-
                 Then("Verify dependencies ") {
                     coVerify {
-                        registerUserLiveData.value = state.captured
                         registerUserUseCase.run(params)
                     }
                     confirmVerified()
@@ -73,6 +81,6 @@ object UserViewModelTest : Spek({
     afterGroup {
         Dispatchers.resetMain()
         testCoroutineDispatcher.cleanupTestCoroutines()
-        testCoroutineScope.cleanupTestCoroutines()
+        ArchTaskExecutor.getInstance().setDelegate(null)
     }
 })
