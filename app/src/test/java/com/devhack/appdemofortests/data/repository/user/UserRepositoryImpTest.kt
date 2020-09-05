@@ -7,9 +7,11 @@ import com.devhack.appdemofortests.data.repositories.DataSource
 import com.devhack.appdemofortests.data.repositories.UserEntity
 import com.devhack.appdemofortests.data.repositories.UserRepositoryImp
 import com.devhack.appdemofortests.usecases.User
+import io.github.serpro69.kfaker.Faker
 import io.mockk.*
 import kotlinx.coroutines.runBlocking
 import org.amshove.kluent.shouldBeEqualTo
+import org.amshove.kluent.shouldBeGreaterThan
 import org.amshove.kluent.shouldBeTrue
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.gherkin.Feature
@@ -86,6 +88,79 @@ object UserRepositoryImpTest : Spek({
                 confirmVerified(netWorkHandler, dataSource)
             }
         }
+
+
+    }
+
+    Feature("Get All User") {
+
+        val netWorkHandler: NetworkHandler = mockk()
+        val dataSource: DataSource = mockk()
+        val userRepository =
+            UserRepositoryImp(
+                netWorkHandler,
+                dataSource
+            )
+
+        beforeEachScenario { clearAllMocks() }
+
+        Scenario("Should get all user") {
+
+            val user: User = mockk(relaxed = true)
+            lateinit var result: Either<Failure, List<User>>
+
+            Given("Network is connected and creating stubs") {
+                every { netWorkHandler.isConnected } returns
+                        UserRepositoryImpTest.NETWORK_CONNECTED
+                coEvery { dataSource.getAllUsers() } returns
+                        UserRepositoryImpTest.users
+            }
+
+            When("Run to add user") {
+                runBlocking {
+                    result = userRepository.getAllUsers()
+                }
+            }
+
+            Then("Verify result success") {
+                (result as Either.Right).b.size.shouldBeGreaterThan(0)
+            }
+
+            Then("Verify the called to dependencies") {
+                coVerifySequence {
+                    netWorkHandler.isConnected
+                    dataSource.getAllUsers()
+                }
+            }
+        }
+
+        Scenario("Should not get all user because there is not connection") {
+
+            val user: User = mockk(relaxed = true)
+            lateinit var result: Either<Failure, List<User>>
+
+            Given("Network is connected") {
+                every { netWorkHandler.isConnected } returns
+                        UserRepositoryImpTest.NETWORK_DISCONNECTED
+            }
+
+            When("Run to add user") {
+                runBlocking {
+                    result = userRepository.getAllUsers()
+                }
+            }
+
+            Then("Verify result success") {
+                (result as Either.Left).a shouldBeEqualTo Failure.NetworkConnection
+            }
+
+            Then("Verify the called to dependencies") {
+                verify(exactly = UserRepositoryImpTest.VERIFY_ONE_INTERACTION)
+                { netWorkHandler.isConnected }
+                coVerify { dataSource.add(any()) wasNot Called }
+                confirmVerified(netWorkHandler, dataSource)
+            }
+        }
     }
 
 }) {
@@ -94,4 +169,23 @@ object UserRepositoryImpTest : Spek({
     private const val NETWORK_DISCONNECTED = false
     private const val SUCCESSFUL_OPERATION = true
     private const val VERIFY_ONE_INTERACTION = 1
+
+    private val users: List<UserEntity>
+        get() = mutableListOf<UserEntity>().apply {
+            add(createUser())
+            add(createUser())
+            add(createUser())
+            add(createUser())
+            add(createUser())
+        }
+
+    private fun createUser(): UserEntity {
+        val faker = Faker()
+        return UserEntity(
+            faker.name.firstName(),
+            faker.name.lastName(),
+            faker.phoneNumber.phoneNumber(),
+            faker.address.fullAddress()
+        )
+    }
 }
