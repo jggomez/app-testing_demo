@@ -22,10 +22,10 @@ class UserViewModel(
     val registerUserLiveData: LiveData<State>
         get() = _registerUserLiveData
 
+    private val _getAllUsersLiveData = MutableLiveData<State>()
 
-    val getAllUsersLiveData by lazy {
-        MutableLiveData<State>()
-    }
+    val getAllUsersLiveData: LiveData<State>
+        get() = _getAllUsersLiveData
 
     fun register(user: User) {
         _registerUserLiveData.value = State.Loading
@@ -36,7 +36,7 @@ class UserViewModel(
     }
 
     fun getAllUsers() {
-        getAllUsersLiveData.value = State.Loading
+        _getAllUsersLiveData.value = State.Loading
         viewModelScope.launch {
             getAllUsersUseCase.run(UseCase.None())
                 .either(::handleErrorGetAllUsers, ::successGetAllUsers)
@@ -52,10 +52,10 @@ class UserViewModel(
     }
 
     private fun handleErrorGetAllUsers(failure: Failure) {
-        getAllUsersLiveData.value = State.Failed(failure)
+        _getAllUsersLiveData.value = State.Failed(failure)
     }
 
     private fun successGetAllUsers(users: List<User>) {
-        getAllUsersLiveData.value = State.Success(users)
+        _getAllUsersLiveData.value = State.Success(users)
     }
 }

@@ -20,11 +20,11 @@ object UserRepositoryImpTest : Spek({
 
     Feature("Add User") {
 
-        val netWorkHandler: NetworkHandler = mockk()
+        val networkHandler: NetworkHandler = mockk()
         val dataSource: DataSource = mockk()
         val userRepository =
             UserRepositoryImp(
-                netWorkHandler,
+                networkHandler,
                 dataSource
             )
 
@@ -37,7 +37,7 @@ object UserRepositoryImpTest : Spek({
             lateinit var result: Either<Failure, Boolean>
 
             Given("Network is connected and creating stubs") {
-                every { netWorkHandler.isConnected } returns
+                every { networkHandler.isConnected } returns
                         UserRepositoryImpTest.NETWORK_CONNECTED
                 coEvery { dataSource.add(capture(slotUserEntity)) } returns
                         UserRepositoryImpTest.SUCCESSFUL_OPERATION
@@ -55,7 +55,7 @@ object UserRepositoryImpTest : Spek({
 
             Then("Verify the called to dependencies") {
                 coVerifySequence {
-                    netWorkHandler.isConnected
+                    networkHandler.isConnected
                     dataSource.add(slotUserEntity.captured)
                 }
             }
@@ -67,7 +67,7 @@ object UserRepositoryImpTest : Spek({
             lateinit var result: Either<Failure, Boolean>
 
             Given("Network is connected") {
-                every { netWorkHandler.isConnected } returns
+                every { networkHandler.isConnected } returns
                         UserRepositoryImpTest.NETWORK_DISCONNECTED
             }
 
@@ -83,22 +83,53 @@ object UserRepositoryImpTest : Spek({
 
             Then("Verify the called to dependencies") {
                 verify(exactly = UserRepositoryImpTest.VERIFY_ONE_INTERACTION)
-                { netWorkHandler.isConnected }
+                { networkHandler.isConnected }
                 coVerify { dataSource.add(any()) wasNot Called }
-                confirmVerified(netWorkHandler, dataSource)
+                confirmVerified(networkHandler, dataSource)
             }
         }
 
+        Scenario("Should generate a Generic Error") {
+            val user: User = mockk(relaxed = true)
+            val error = UserRepositoryImpTest.ERROR_GENERIC
+            lateinit var result: Either<Failure, Boolean>
+
+            Given("Network is connected and data source return an Error") {
+                every { networkHandler.isConnected } returns UserRepositoryImpTest.NETWORK_CONNECTED
+                coEvery {
+                    dataSource.add(ofType())
+                } throws Exception(error)
+            }
+
+            When("Run to add user") {
+                runBlocking {
+                    result = userRepository.add(user)
+                }
+            }
+
+            Then("Verify called dependencies handler") {
+                coVerifySequence {
+                    networkHandler.isConnected
+                    dataSource.add(ofType())
+                }
+            }
+
+            Then("Verify Exception") {
+                ((result as Either.Left).a
+                        as Failure.GenericError)
+                    .exception.message shouldBeEqualTo error
+            }
+        }
 
     }
 
     Feature("Get All User") {
 
-        val netWorkHandler: NetworkHandler = mockk()
+        val networkHandler: NetworkHandler = mockk()
         val dataSource: DataSource = mockk()
         val userRepository =
             UserRepositoryImp(
-                netWorkHandler,
+                networkHandler,
                 dataSource
             )
 
@@ -106,11 +137,10 @@ object UserRepositoryImpTest : Spek({
 
         Scenario("Should get all user") {
 
-            val user: User = mockk(relaxed = true)
             lateinit var result: Either<Failure, List<User>>
 
             Given("Network is connected and creating stubs") {
-                every { netWorkHandler.isConnected } returns
+                every { networkHandler.isConnected } returns
                         UserRepositoryImpTest.NETWORK_CONNECTED
                 coEvery { dataSource.getAllUsers() } returns
                         UserRepositoryImpTest.users
@@ -123,12 +153,12 @@ object UserRepositoryImpTest : Spek({
             }
 
             Then("Verify result success") {
-                (result as Either.Right).b.size.shouldBeGreaterThan(0)
+                (result as Either.Right).b.size shouldBeGreaterThan 0
             }
 
             Then("Verify the called to dependencies") {
                 coVerifySequence {
-                    netWorkHandler.isConnected
+                    networkHandler.isConnected
                     dataSource.getAllUsers()
                 }
             }
@@ -136,11 +166,10 @@ object UserRepositoryImpTest : Spek({
 
         Scenario("Should not get all user because there is not connection") {
 
-            val user: User = mockk(relaxed = true)
             lateinit var result: Either<Failure, List<User>>
 
             Given("Network is connected") {
-                every { netWorkHandler.isConnected } returns
+                every { networkHandler.isConnected } returns
                         UserRepositoryImpTest.NETWORK_DISCONNECTED
             }
 
@@ -156,9 +185,40 @@ object UserRepositoryImpTest : Spek({
 
             Then("Verify the called to dependencies") {
                 verify(exactly = UserRepositoryImpTest.VERIFY_ONE_INTERACTION)
-                { netWorkHandler.isConnected }
+                { networkHandler.isConnected }
                 coVerify { dataSource.add(any()) wasNot Called }
-                confirmVerified(netWorkHandler, dataSource)
+                confirmVerified(networkHandler, dataSource)
+            }
+        }
+
+        Scenario("Should generate a Generic Error") {
+            val error = UserRepositoryImpTest.ERROR_GENERIC
+            lateinit var result: Either<Failure, List<User>>
+
+            Given("Network is connected and data source return an Error") {
+                every { networkHandler.isConnected } returns UserRepositoryImpTest.NETWORK_CONNECTED
+                coEvery {
+                    dataSource.getAllUsers()
+                } throws Exception(error)
+            }
+
+            When("Run to get all users") {
+                runBlocking {
+                    result = userRepository.getAllUsers()
+                }
+            }
+
+            Then("Verify called dependencies handler") {
+                coVerifySequence {
+                    networkHandler.isConnected
+                    dataSource.getAllUsers()
+                }
+            }
+
+            Then("Verify Exception") {
+                ((result as Either.Left).a
+                        as Failure.GenericError)
+                    .exception.message shouldBeEqualTo error
             }
         }
     }
@@ -169,6 +229,7 @@ object UserRepositoryImpTest : Spek({
     private const val NETWORK_DISCONNECTED = false
     private const val SUCCESSFUL_OPERATION = true
     private const val VERIFY_ONE_INTERACTION = 1
+    private const val ERROR_GENERIC = "error_generic"
 
     private val users: List<UserEntity>
         get() = mutableListOf<UserEntity>().apply {
