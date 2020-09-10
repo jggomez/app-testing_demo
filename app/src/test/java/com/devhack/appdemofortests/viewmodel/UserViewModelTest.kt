@@ -2,6 +2,7 @@ package com.devhack.appdemofortests.viewmodel
 
 import androidx.arch.core.executor.ArchTaskExecutor
 import androidx.arch.core.executor.TaskExecutor
+import androidx.lifecycle.Observer
 import co.devhack.base.Either
 import co.devhack.base.State
 import co.devhack.base.error.Failure
@@ -18,6 +19,8 @@ import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.setMain
+import org.amshove.kluent.shouldBeEqualTo
+import org.amshove.kluent.shouldBeInstanceOf
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.gherkin.Feature
 
@@ -48,20 +51,25 @@ object UserViewModelTest : Spek({
         }
 
         Scenario("Should register the user correctly") {
+            val params = slot<RegisterUserUseCase.Params>()
             val state = slot<State>()
             val responseExpected = true
             val registerUserUseCase: RegisterUserUseCase = mockk(relaxed = true)
             val getAllUsersUseCase: GetAllUsersUseCase = mockk(relaxed = true)
             val user: User = mockk(relaxed = true)
-            val params = RegisterUserUseCase.Params(user)
 
             val response: Either<Failure, Boolean> = Either.Right(responseExpected)
             val userViewModel = UserViewModel(registerUserUseCase, getAllUsersUseCase)
+            val observer: Observer<State> = spyk(Observer { })
 
             Given("Creating stubs and context") {
+                userViewModel.registerUserLiveData.observeForever(observer)
                 coEvery {
-                    registerUserUseCase.run(params)
+                    registerUserUseCase.run(capture(params))
                 } returns response
+                justRun {
+                    observer.onChanged(capture(state))
+                }
             }
 
             When("Calling to action") {
@@ -70,9 +78,66 @@ object UserViewModelTest : Spek({
                 }
             }
 
+            Then("Verify result success") {
+                val respState = state.captured
+                respState shouldBeInstanceOf State.Success::class.java
+                when (respState) {
+                    is State.Success -> {
+                        respState.responseTo<Boolean>() shouldBeEqualTo true
+                    }
+                    else -> throw Exception("Incorrect State. This should be Success")
+                }
+            }
+
             Then("Verify dependencies ") {
                 coVerify {
-                    registerUserUseCase.run(params)
+                    registerUserUseCase.run(params.captured)
+                }
+                confirmVerified()
+            }
+        }
+
+        Scenario("Should not register and return error") {
+            val params = slot<RegisterUserUseCase.Params>()
+            val state = slot<State>()
+            val registerUserUseCase: RegisterUserUseCase = mockk(relaxed = true)
+            val getAllUsersUseCase: GetAllUsersUseCase = mockk(relaxed = true)
+            val user: User = mockk(relaxed = true)
+
+            val response: Either<Failure, Boolean> = Either.Left(Failure.NetworkConnection)
+            val userViewModel = UserViewModel(registerUserUseCase, getAllUsersUseCase)
+            val observer: Observer<State> = spyk(Observer { })
+
+            Given("Creating stubs and context") {
+                userViewModel.registerUserLiveData.observeForever(observer)
+                coEvery {
+                    registerUserUseCase.run(capture(params))
+                } returns response
+                justRun {
+                    observer.onChanged(capture(state))
+                }
+            }
+
+            When("Calling to action") {
+                testCoroutineDispatcher.runBlockingTest {
+                    userViewModel.register(user)
+                }
+            }
+
+            Then("Verify result error") {
+                val respState = state.captured
+                respState shouldBeInstanceOf State.Failed::class.java
+                when (respState) {
+                    is State.Failed -> {
+                        respState.failure shouldBeEqualTo Failure.NetworkConnection
+                    }
+                    else -> throw Exception("Incorrect State. This should be Failed")
+                }
+            }
+
+            Then("Verify dependencies ") {
+                coVerify {
+                    registerUserUseCase.run(params.captured)
                 }
                 confirmVerified()
             }
@@ -107,17 +172,23 @@ object UserViewModelTest : Spek({
         }
 
         Scenario("Should get all users correctly") {
+            val params = slot<UseCase.None>()
             val state = slot<State>()
             val registerUserUseCase: RegisterUserUseCase = mockk(relaxed = true)
             val getAllUsersUseCase: GetAllUsersUseCase = mockk(relaxed = true)
 
             val response: Either<Failure, List<User>> = Either.Right(UserViewModelTest.users)
             val userViewModel = UserViewModel(registerUserUseCase, getAllUsersUseCase)
+            val observer: Observer<State> = spyk(Observer { })
 
             Given("Creating stubs and context") {
+                userViewModel.getAllUsersLiveData.observeForever(observer)
                 coEvery {
-                    getAllUsersUseCase.run(UseCase.None())
+                    getAllUsersUseCase.run(capture(params))
                 } returns response
+                justRun {
+                    observer.onChanged(capture(state))
+                }
             }
 
             When("Calling to action") {
@@ -127,8 +198,65 @@ object UserViewModelTest : Spek({
             }
 
             Then("Verify dependencies") {
+                val respState = state.captured
+                respState shouldBeInstanceOf State.Success::class.java
+                when (respState) {
+                    is State.Success -> {
+                        val data = respState.responseTo<List<User>>()
+                        data.size shouldBeEqualTo UserViewModelTest.users.size
+                    }
+                    else -> throw Exception("Incorrect State")
+                }
+            }
+
+            Then("Verify dependencies") {
                 coVerify {
-                    getAllUsersUseCase.run(UseCase.None())
+                    getAllUsersUseCase.run(params.captured)
+                }
+                confirmVerified(getAllUsersUseCase)
+            }
+        }
+
+        Scenario("Should not get all users and return error") {
+            val params = slot<UseCase.None>()
+            val state = slot<State>()
+            val registerUserUseCase: RegisterUserUseCase = mockk(relaxed = true)
+            val getAllUsersUseCase: GetAllUsersUseCase = mockk(relaxed = true)
+
+            val response: Either<Failure, List<User>> = Either.Left(Failure.NetworkConnection)
+            val userViewModel = UserViewModel(registerUserUseCase, getAllUsersUseCase)
+            val observer: Observer<State> = spyk(Observer { })
+
+            Given("Creating stubs and context") {
+                userViewModel.getAllUsersLiveData.observeForever(observer)
+                coEvery {
+                    getAllUsersUseCase.run(capture(params))
+                } returns response
+                justRun {
+                    observer.onChanged(capture(state))
+                }
+            }
+
+            When("Calling to action") {
+                testCoroutineDispatcher.runBlockingTest {
+                    userViewModel.getAllUsers()
+                }
+            }
+
+            Then("Verify result error") {
+                val respState = state.captured
+                respState shouldBeInstanceOf State.Failed::class.java
+                when (respState) {
+                    is State.Failed -> {
+                        respState.failure shouldBeEqualTo Failure.NetworkConnection
+                    }
+                    else -> throw Exception("Incorrect State. This should be Failed")
+                }
+            }
+
+            Then("Verify dependencies") {
+                coVerify {
+                    getAllUsersUseCase.run(params.captured)
                 }
                 confirmVerified(getAllUsersUseCase)
             }
