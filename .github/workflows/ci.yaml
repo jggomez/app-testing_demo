@@ -24,7 +24,7 @@ jobs:
           wrapper-cache-enabled: true
           dependencies-cache-enabled: true
           configuration-cache-enabled: true
-          arguments: assembleDebug
+          arguments: assembleRelease
       - name: Run Kotlin Format Source
         run: ./gradlew ktlintFormat
       - name: Run Kotlin Linter
