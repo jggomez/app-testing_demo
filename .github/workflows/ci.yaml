@@ -7,7 +7,7 @@ on:
 
 jobs:
   publish:
-    name: Release build and publish
+    name: CI - run ktlint and unit tests for Android
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -24,7 +24,7 @@ jobs:
           wrapper-cache-enabled: true
           dependencies-cache-enabled: true
           configuration-cache-enabled: true
-          arguments: assembleRelease
+          arguments: assembleDebug
       - name: Run Kotlin Format Source
         run: ./gradlew ktlintFormat
       - name: Run Kotlin Linter
