@@ -12,7 +12,13 @@ import com.devhack.appdemofortests.usecases.GetAllUsersUseCase
 import com.devhack.appdemofortests.usecases.RegisterUserUseCase
 import com.devhack.appdemofortests.usecases.User
 import io.github.serpro69.kfaker.Faker
-import io.mockk.*
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.confirmVerified
+import io.mockk.justRun
+import io.mockk.mockk
+import io.mockk.slot
+import io.mockk.spyk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
@@ -24,10 +30,8 @@ import org.amshove.kluent.shouldBeInstanceOf
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.gherkin.Feature
 
-
 @ExperimentalCoroutinesApi
 object UserViewModelTest : Spek({
-
 
     Feature("Register User") {
 

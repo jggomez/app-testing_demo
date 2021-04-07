@@ -7,10 +7,13 @@ import com.devhack.appdemofortests.usecases.GetAllUsersUseCase
 import com.devhack.appdemofortests.usecases.RegisterUserUseCase
 import com.devhack.appdemofortests.usecases.User
 import com.devhack.appdemofortests.usecases.repository.UserRepository
-import io.mockk.*
+import io.mockk.clearAllMocks
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.confirmVerified
+import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.amshove.kluent.shouldBeEqualTo
-import org.amshove.kluent.shouldBeGreaterThan
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.gherkin.Feature
 
@@ -30,7 +33,7 @@ object RegisterUserUseCaseTest : Spek({
 
             Given("Creating Stubs") {
                 coEvery { userRepository.add(user) } returns
-                        response
+                    response
             }
 
             When("Run to register user") {
@@ -62,7 +65,7 @@ object RegisterUserUseCaseTest : Spek({
 
             Given("Creating Stubs") {
                 coEvery { userRepository.getAllUsers() } returns
-                        response
+                    response
             }
 
             When("Run to get all users") {

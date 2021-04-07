@@ -1,9 +1,13 @@
 package com.devhack.appdemofortests.ui.registerusers.robots
 
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.*
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
+import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import com.devhack.appdemofortests.R
 
 fun registerUser(block: RegisterUserRobot.() -> Unit) = RegisterUserRobot().apply(block)
@@ -67,5 +71,4 @@ class ResultRobot {
             matches(isDisplayed())
         )
     }
-
 }

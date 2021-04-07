@@ -44,5 +44,4 @@ class UserRepositoryImp(
         } catch (ex: java.lang.Exception) {
             Either.Left(ex.toCustomExceptions())
         }
-
 }

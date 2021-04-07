@@ -6,5 +6,4 @@ object DataTests {
     const val LAST_NAME = "Gomez"
     const val CELL_PHONE = "1234567878"
     const val ADDRESS = "Guanajuato 56"
-
 }

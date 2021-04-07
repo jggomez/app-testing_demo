@@ -1,7 +1,5 @@
 package com.devhack.appdemofortests.ui.activities
 
-import android.content.Intent
-import android.widget.Toast
 import co.devhack.androidextensions.components.liveDataObserve
 import co.devhack.base.State
 import co.devhack.presentation.BaseActivity

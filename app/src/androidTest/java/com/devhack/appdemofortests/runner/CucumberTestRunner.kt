@@ -5,7 +5,6 @@ import androidx.test.runner.AndroidJUnitRunner
 import com.devhack.appdemofortests.BuildConfig
 import cucumber.api.android.CucumberInstrumentationCore
 
-
 class CucumberTestRunner : AndroidJUnitRunner() {
 
     companion object {

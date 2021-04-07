@@ -8,4 +8,4 @@ import cucumber.api.CucumberOptions
     tags = ["@e2e", "@smoke"]
 )
 @SuppressWarnings("unused")
-class CucumberTestCase 
+class CucumberTestCase

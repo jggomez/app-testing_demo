@@ -8,7 +8,16 @@ import com.devhack.appdemofortests.data.repositories.UserEntity
 import com.devhack.appdemofortests.data.repositories.UserRepositoryImp
 import com.devhack.appdemofortests.usecases.User
 import io.github.serpro69.kfaker.Faker
-import io.mockk.*
+import io.mockk.Called
+import io.mockk.clearAllMocks
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.coVerifySequence
+import io.mockk.confirmVerified
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.slot
+import io.mockk.verify
 import kotlinx.coroutines.runBlocking
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldBeGreaterThan
@@ -38,9 +47,9 @@ object UserRepositoryImpTest : Spek({
 
             Given("Network is connected and creating stubs") {
                 every { networkHandler.isConnected } returns
-                        UserRepositoryImpTest.NETWORK_CONNECTED
+                    UserRepositoryImpTest.NETWORK_CONNECTED
                 coEvery { dataSource.add(capture(slotUserEntity)) } returns
-                        UserRepositoryImpTest.SUCCESSFUL_OPERATION
+                    UserRepositoryImpTest.SUCCESSFUL_OPERATION
             }
 
             When("Run to add user") {
@@ -68,7 +77,7 @@ object UserRepositoryImpTest : Spek({
 
             Given("Network is connected") {
                 every { networkHandler.isConnected } returns
-                        UserRepositoryImpTest.NETWORK_DISCONNECTED
+                    UserRepositoryImpTest.NETWORK_DISCONNECTED
             }
 
             When("Run to add user") {
@@ -82,8 +91,7 @@ object UserRepositoryImpTest : Spek({
             }
 
             Then("Verify the called to dependencies") {
-                verify(exactly = UserRepositoryImpTest.VERIFY_ONE_INTERACTION)
-                { networkHandler.isConnected }
+                verify(exactly = UserRepositoryImpTest.VERIFY_ONE_INTERACTION) { networkHandler.isConnected }
                 coVerify { dataSource.add(any()) wasNot Called }
                 confirmVerified(networkHandler, dataSource)
             }
@@ -115,12 +123,13 @@ object UserRepositoryImpTest : Spek({
             }
 
             Then("Verify Exception") {
-                ((result as Either.Left).a
-                        as Failure.GenericError)
+                (
+                    (result as Either.Left).a
+                        as Failure.GenericError
+                    )
                     .exception.message shouldBeEqualTo error
             }
         }
-
     }
 
     Feature("Get All User") {
@@ -141,9 +150,9 @@ object UserRepositoryImpTest : Spek({
 
             Given("Network is connected and creating stubs") {
                 every { networkHandler.isConnected } returns
-                        UserRepositoryImpTest.NETWORK_CONNECTED
+                    UserRepositoryImpTest.NETWORK_CONNECTED
                 coEvery { dataSource.getAllUsers() } returns
-                        UserRepositoryImpTest.users
+                    UserRepositoryImpTest.users
             }
 
             When("Run to add user") {
@@ -170,7 +179,7 @@ object UserRepositoryImpTest : Spek({
 
             Given("Network is connected") {
                 every { networkHandler.isConnected } returns
-                        UserRepositoryImpTest.NETWORK_DISCONNECTED
+                    UserRepositoryImpTest.NETWORK_DISCONNECTED
             }
 
             When("Run to add user") {
@@ -184,8 +193,7 @@ object UserRepositoryImpTest : Spek({
             }
 
             Then("Verify the called to dependencies") {
-                verify(exactly = UserRepositoryImpTest.VERIFY_ONE_INTERACTION)
-                { networkHandler.isConnected }
+                verify(exactly = UserRepositoryImpTest.VERIFY_ONE_INTERACTION) { networkHandler.isConnected }
                 coVerify { dataSource.add(any()) wasNot Called }
                 confirmVerified(networkHandler, dataSource)
             }
@@ -216,13 +224,14 @@ object UserRepositoryImpTest : Spek({
             }
 
             Then("Verify Exception") {
-                ((result as Either.Left).a
-                        as Failure.GenericError)
+                (
+                    (result as Either.Left).a
+                        as Failure.GenericError
+                    )
                     .exception.message shouldBeEqualTo error
             }
         }
     }
-
 }) {
 
     private const val NETWORK_CONNECTED = true

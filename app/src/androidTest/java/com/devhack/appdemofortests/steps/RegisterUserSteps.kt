@@ -17,7 +17,6 @@ class RegisterUserSteps {
 
     @Given("^El usuario esta en el formulario para crear una cuenta y llena los datos (nombre, apellido, celular, dirección)$")
     fun initRegisterUser() {
-
     }
 
     @When("^El usuario digita el nombre (\\\\S+)$")
@@ -47,5 +46,4 @@ class RegisterUserSteps {
             isSuccessUserList()
         }
     }
-
 }

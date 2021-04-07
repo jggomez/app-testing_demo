@@ -32,7 +32,6 @@ class DialogLoading : DialogFragment() {
     }
 }
 
-
 fun AppCompatActivity.showAnimLoading(): DialogLoading =
     DialogLoading.newInstance().also {
         it.show(this.supportFragmentManager, "")
