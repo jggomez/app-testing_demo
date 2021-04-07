@@ -16,6 +16,9 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
+      - name: Prepare environment
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
       - name: Build all artifacts
         id: buildAll
         uses: eskatos/gradle-command-action@v1.3.3
@@ -25,7 +28,15 @@ jobs:
           dependencies-cache-enabled: true
           configuration-cache-enabled: true
           arguments: assembleDebug
+      - name: Run Kotlin Format Source
+        run: ./gradlew ktlintFormat
       - name: Run Kotlin Linter
-        run: ./gradlew ktlintStagingDebugCheck
+        run: ./gradlew ktlintCheck
       - name: Run Unit Tests
-        run: ./gradlew testStagingDebugUnitTest
+        run: ./gradlew test
+      - name: Notify on Slack
+        uses: act10ns/slack@v1.0.9
+        with:
+          status: ${{ job.status }}
+          steps: ${{ toJson(steps) }}
+        if: always()
