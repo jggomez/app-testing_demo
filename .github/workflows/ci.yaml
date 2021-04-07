@@ -1,9 +1,9 @@
 name: CI
 
 on:
-  release:
-    # We'll run this workflow when a new GitHub release is created
-    types: [released]
+  push:
+    branches:
+      - master
 
 jobs:
   publish:
@@ -36,6 +36,8 @@ jobs:
         run: ./gradlew test
       - name: Notify on Slack
         uses: act10ns/slack@v1.0.9
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         with:
           status: ${{ job.status }}
           steps: ${{ toJson(steps) }}
