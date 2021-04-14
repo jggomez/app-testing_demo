@@ -1,0 +1,5 @@
+repos:
+- repo: https://github.com/jggomez/pre-commit-android-kotlin
+  rev: HEAD
+  hooks:
+  - id: ktlint
