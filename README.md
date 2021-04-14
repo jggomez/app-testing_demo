@@ -9,6 +9,7 @@ This repository is an Android application with Kotlin and contains unit tests an
     - Unit tests for the viewmodels.
     - E2E tests with robot pattern.
     - E2E tests with robot pattern and cucumber.
+    - Continuous integration with Actions
     
 
 - [spek](spekframework.org), [mockk](https://mockk.io/), [kluent](https://markusamshove.github.io/Kluent/) and [Faker](https://github.com/serpro69/kotlin-faker)
